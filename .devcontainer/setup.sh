@@ -13,9 +13,11 @@ rm get-docker.sh
 echo "📦 Installing PNPM..."
 npm install -g pnpm
 
-# Install Supabase CLI
+# Install Supabase CLI using recommended method
 echo "📦 Installing Supabase CLI..."
-npm install -g supabase
+curl -fsSL https://github.com/supabase/cli/releases/download/v2.75.0/supabase_linux_amd64.tar.gz | tar -xz -C /tmp
+sudo mv /tmp/supabase /usr/local/bin/supabase
+sudo chmod +x /usr/local/bin/supabase
 
 # Install dependencies
 echo "📦 Installing project dependencies..."
