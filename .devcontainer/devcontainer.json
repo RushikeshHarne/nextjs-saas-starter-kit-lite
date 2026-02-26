@@ -31,6 +31,6 @@
       ]
     }
   },
-  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postCreateCommand": "sudo chmod 666 /var/run/docker.sock && bash .devcontainer/setup.sh",
   "remoteUser": "node"
 }
