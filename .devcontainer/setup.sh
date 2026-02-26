@@ -54,10 +54,13 @@ ANON_KEY=$(echo "$SUPABASE_STATUS" | grep "anon key:" | awk '{print $3}')
 SERVICE_ROLE_KEY=$(echo "$SUPABASE_STATUS" | grep "service_role key:" | awk '{print $3}')
 
 # Get Codespace URLs
-CODESPACE_NAME="${CODESPACE_NAME:-localhost}"
-if [ "$CODESPACE_NAME" != "localhost" ]; then
+if [ -n "$CODESPACE_NAME" ]; then
   SUPABASE_URL="https://${CODESPACE_NAME}-54321.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
   SITE_URL="https://${CODESPACE_NAME}-3000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
+  
+  # Update Supabase config with Codespace URLs
+  echo "🔧 Updating Supabase config for Codespaces..."
+  sed -i "s|additional_redirect_urls = \[.*\]|additional_redirect_urls = [\"http://localhost:3000\", \"http://localhost:3000/auth/callback\", \"http://localhost:3000/update-password\", \"${SITE_URL}\", \"${SITE_URL}/auth/callback\", \"${SITE_URL}/update-password\"]|" supabase/config.toml
 else
   SUPABASE_URL="http://127.0.0.1:54321"
   SITE_URL="http://localhost:3000"
