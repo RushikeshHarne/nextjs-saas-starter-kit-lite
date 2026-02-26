@@ -24,6 +24,21 @@ echo "📦 Installing project dependencies..."
 cd /workspace
 pnpm install
 
+# Get Codespace URLs and update config BEFORE starting Supabase
+if [ -n "$CODESPACE_NAME" ]; then
+  SUPABASE_URL="https://${CODESPACE_NAME}-54321.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
+  SITE_URL="https://${CODESPACE_NAME}-3000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
+  
+  echo "🔧 Updating Supabase config for Codespaces..."
+  cd /workspace/apps/web
+  sed -i "s|site_url = \".*\"|site_url = \"${SITE_URL}\"|" supabase/config.toml
+  sed -i "s|additional_redirect_urls = \[.*\]|additional_redirect_urls = [\"http://localhost:3000\", \"http://localhost:3000/auth/callback\", \"http://localhost:3000/update-password\", \"${SITE_URL}\", \"${SITE_URL}/auth/callback\", \"${SITE_URL}/update-password\"]|" supabase/config.toml
+  cd /workspace
+else
+  SUPABASE_URL="http://127.0.0.1:54321"
+  SITE_URL="http://localhost:3000"
+fi
+
 # Start Supabase
 echo "🔧 Starting Supabase..."
 pnpm run supabase:web:start &
@@ -54,19 +69,6 @@ SUPABASE_STATUS=$(pnpm supabase status)
 
 ANON_KEY=$(echo "$SUPABASE_STATUS" | grep "anon key:" | awk '{print $3}')
 SERVICE_ROLE_KEY=$(echo "$SUPABASE_STATUS" | grep "service_role key:" | awk '{print $3}')
-
-# Get Codespace URLs
-if [ -n "$CODESPACE_NAME" ]; then
-  SUPABASE_URL="https://${CODESPACE_NAME}-54321.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
-  SITE_URL="https://${CODESPACE_NAME}-3000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
-  
-  # Update Supabase config with Codespace URLs
-  echo "🔧 Updating Supabase config for Codespaces..."
-  sed -i "s|additional_redirect_urls = \[.*\]|additional_redirect_urls = [\"http://localhost:3000\", \"http://localhost:3000/auth/callback\", \"http://localhost:3000/update-password\", \"${SITE_URL}\", \"${SITE_URL}/auth/callback\", \"${SITE_URL}/update-password\"]|" supabase/config.toml
-else
-  SUPABASE_URL="http://127.0.0.1:54321"
-  SITE_URL="http://localhost:3000"
-fi
 
 # Create .env.local
 echo "📝 Creating .env.local..."
