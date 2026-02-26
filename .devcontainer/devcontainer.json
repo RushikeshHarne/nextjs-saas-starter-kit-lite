@@ -2,7 +2,7 @@
   "name": "Makerkit Next.js SaaS",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/workspaces/nextjs-saas-starter-kit-lite",
   "forwardPorts": [3000, 54321, 54323, 54324],
   "portsAttributes": {
     "3000": {
